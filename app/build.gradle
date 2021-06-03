@@ -20,7 +20,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
+
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
@@ -31,8 +36,11 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     implementation 'com.trustwallet:wallet-core:2.6.3'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.62'
    // implementation group: 'com.trustwallet', name: 'wallet-core', version: '2.6.3'
 
     implementation 'com.squareup.okhttp3:okhttp:3.8.1'
     implementation "com.google.code.gson:gson:2.8.6"
+    implementation "org.web3j:core:4.6.0-android"
+    //implementation 'org.web3j:core:3.3.1-android'
 }

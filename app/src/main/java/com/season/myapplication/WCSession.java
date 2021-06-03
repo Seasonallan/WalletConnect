@@ -18,4 +18,12 @@ public class WCSession {
             version = uri.getHost();
         }
     }
+
+    public boolean equal(WCSession session){
+        if (topic != null){
+            return topic.equals(session.topic);
+        }
+        return false;
+    }
+
 }

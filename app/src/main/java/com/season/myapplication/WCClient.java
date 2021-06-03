@@ -1,5 +1,6 @@
 package com.season.myapplication;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -7,6 +8,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 import com.season.myapplication.entity.Enums;
+import com.season.myapplication.entity.EthereumModels;
 import com.season.myapplication.entity.JsonRpcModels;
 import com.season.myapplication.entity.SessionModels;
 import com.season.myapplication.lib.Numeric;
@@ -48,11 +50,15 @@ public abstract class WCClient extends WebSocketListener {
     private String remotePeerId;
     private String peerId;
     private SessionModels.WCPeerMeta peerMeta;
-    public static String ETHAddress = "0xc0b09b78c00EBCeD69eD1b397F5FB6AD94938441";
 
-    public void connect(String url, String remotePeerId) throws Exception {
+    public void connect(String url, String remotePeerId) {
+        if (TextUtils.isEmpty(url)) {
+            return;
+        }
         Log.d(TAG, "==> connect " + url);
-        if (session != null && session.topic != new WCSession(url).topic) {
+        if (session != null && !session.equal(new WCSession(url))) {
+            Log.d(TAG, "==> connect " + session.topic);
+            Log.d(TAG, "==> connect " + new WCSession(url).topic);
             JsonRpcModels.JsonRpcRequest request = new JsonRpcModels.JsonRpcRequest();
             request.id = new Date().getTime();
             request.method = Enums.WCMethod.SESSION_UPDATE;
@@ -66,7 +72,7 @@ public abstract class WCClient extends WebSocketListener {
         peerMeta = new SessionModels.WCPeerMeta();
         peerMeta.name = "特斯";
         peerMeta.url = "https://www.alphawallet.com";
-        peerMeta.description = ETHAddress;
+        peerMeta.description = "ETHAddress";
         peerMeta.icons = Arrays.asList("https://alphawallet.com/wp-content/themes/alphawallet/img/alphawallet-logo.svg");
 
         this.peerId = UUID.randomUUID().toString();
@@ -83,17 +89,17 @@ public abstract class WCClient extends WebSocketListener {
         switch (request.method) {
             case SESSION_REQUEST:
                 Log.d(TAG, "==> message SESSION_REQUEST");
-                List<SessionModels.WCSessionRequest> params = gson.fromJson(request.params, new TypeToken<List<SessionModels.WCSessionRequest>>() {
+                List<SessionModels.WCSessionRequest> requestParams = gson.fromJson(request.params, new TypeToken<List<SessionModels.WCSessionRequest>>() {
                 }.getType());
-                SessionModels.WCSessionRequest param = params.get(0);
+                SessionModels.WCSessionRequest requestParam = requestParams.get(0);
                 handshakeId = request.id;
-                remotePeerId = param.peerId;
-                if (param.chainId == null) {
+                remotePeerId = requestParam.peerId;
+                if (requestParam.chainId == null) {
                     chainId = 1;
                 } else {
-                    chainId = Integer.parseInt(param.chainId);
+                    chainId = Integer.parseInt(requestParam.chainId);
                 }
-                onSessionRequest(request.id, param.peerMeta);
+                onSessionRequest(request.id, requestParam.peerMeta);
                 break;
             case SESSION_UPDATE:
                 Log.d(TAG, "==> message SESSION_UPDATE");
@@ -112,6 +118,14 @@ public abstract class WCClient extends WebSocketListener {
                 break;
             case ETH_SEND_TRANSACTION:
                 Log.d(TAG, "==> message ETH_SEND_TRANSACTION");
+                //{"id":1622617690631960,"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{"from":"0xc0b09b78c00ebced69ed1b397f5fb6ad94938441","to":"0xba12222222228d8ba445958a75a0704d566bf2c8","gasPrice":"0x60db88400","gas":"0x1f6aa","value":"0x610eb740268b618","data":"0x52bbbe2900000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000c0b09b78c00ebced69ed1b397f5fb6ad949384410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0b09b78c00ebced69ed1b397f5fb6ad94938441000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003db760ae6c888e5be1ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0b09dea16768f0799065c475be02919503cb2a3500020000000000000000001a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006b175474e89094c44da98b954eedeac495271d0f0000000000000000000000000000000000000000000000000610eb740268b61800000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000000"}]}
+
+                List<EthereumModels.WCEthereumTransaction> transactionParams = gson.fromJson(request.params, new TypeToken<List<EthereumModels.WCEthereumTransaction>>() {
+                }.getType());
+                EthereumModels.WCEthereumTransaction transactionParam = transactionParams.get(0);
+                handshakeId = request.id;
+                onTransaction(request.id, transactionParam);
+
                 break;
             case GET_ACCOUNTS:
                 Log.d(TAG, "==> message GET_ACCOUNTS");
@@ -119,24 +133,31 @@ public abstract class WCClient extends WebSocketListener {
         }
     }
 
-    protected abstract void onSessionRequest(long id, SessionModels.WCPeerMeta peerMeta);
+    public abstract void onTransaction(long id, EthereumModels.WCEthereumTransaction transaction);
+
+    public abstract void onSessionRequest(long id, SessionModels.WCPeerMeta peerMeta);
 
 
     public static byte[] toByteArray(String string) {
         return Numeric.hexStringToByteArray(string);
     }
 
-    private boolean encryptAndSend(String result) throws Exception {
-        Log.d(TAG, "==> message " + result);
-        String payload = gson.toJson(WCCipher.encrypt(result.getBytes("UTF-8"), toByteArray(session.key)));
-        SessionModels.WCSocketMessage message = new SessionModels.WCSocketMessage();
-        message.topic = remotePeerId == null ? session.topic : remotePeerId;
-        message.type = Enums.MessageType.PUB;
-        message.payload = payload;
+    private boolean encryptAndSend(String result) {
+        try {
+            Log.d(TAG, "==> message " + result);
+            String payload = gson.toJson(WCCipher.encrypt(result.getBytes("UTF-8"), toByteArray(session.key)));
+            SessionModels.WCSocketMessage message = new SessionModels.WCSocketMessage();
+            message.topic = remotePeerId == null ? session.topic : remotePeerId;
+            message.type = Enums.MessageType.PUB;
+            message.payload = payload;
 
-        String json = gson.toJson(message);
-        Log.d(TAG, "==> encryptAndSend:" + json);
-        return socket.send(json);
+            String json = gson.toJson(message);
+            Log.d(TAG, "==> encryptAndSend:" + json);
+            return socket.send(json);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private String decryptMessage(String text) throws Exception {
@@ -165,6 +186,14 @@ public abstract class WCClient extends WebSocketListener {
             error.error = JsonRpcModels.JsonRpcError.invalidParams("Invalid parameters");
             encryptAndSend(gson.toJson(error));
         }
+    }
+
+
+    public <T> boolean approveRequest(long id, T result) {
+        JsonRpcModels.JsonRpcResponse<T> response = new JsonRpcModels.JsonRpcResponse();
+        response.id = id;
+        response.result = result;
+        return encryptAndSend(gson.toJson(response));
     }
 
     public boolean approveSession(List<String> accounts) throws Exception {
@@ -257,6 +286,8 @@ public abstract class WCClient extends WebSocketListener {
      */
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+        Log.d(TAG, "<== onFailure " + t.getMessage());
+        onFailure(t);
     }
 
 }
