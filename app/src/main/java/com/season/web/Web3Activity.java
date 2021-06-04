@@ -62,8 +62,8 @@ public class Web3Activity extends AppCompatActivity {
                 }
                 String method = request.getMethod();
                 String url = request.getUrl().toString();
-                L.e("TAG-Intercept", url );
-                L.e("TAG-Intercept", method );
+                L.e("TAG-Intercept", url);
+                L.e("TAG-Intercept", method);
                 if (method.equalsIgnoreCase("GET") && !request.isForMainFrame()) {
                     if (url.contains(".js") || url.contains("json") || url.contains("css")) {
                         //注入JS 暂时废弃
@@ -95,8 +95,8 @@ public class Web3Activity extends AppCompatActivity {
                 super.onPageFinished(view, url);
                 L.e("TAG-onPageFinished", url);
                 setTitle(view.getTitle());
-                synchronized (lock) {
-                    if (!isInjected) {
+                if (!isInjected) {
+                    synchronized (lock) {
                         loadJs(view);
                         isInjected = true;
                     }
