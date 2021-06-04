@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.season.socket.MainActivity">
+    tools:context="com.season.socket.SocketActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,13 +12,6 @@
         android:paddingTop="48dp"
         android:gravity="center"
         android:orientation="vertical">
-
-        <EditText
-            android:id="@+id/et_address"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="0x52d456E7e591d947A0E2002576416d7F4d569a44"
-            android:hint="wallet address" />
 
         <EditText
             android:id="@+id/et"

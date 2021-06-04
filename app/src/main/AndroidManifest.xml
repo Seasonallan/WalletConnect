@@ -22,7 +22,7 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-<!--        <activity android:name="com.season.socket.MainActivity">-->
+<!--        <activity android:name="com.season.socket.SocketActivity">-->
 <!--            <intent-filter>-->
 <!--                <action android:name="android.intent.action.MAIN" />-->
 

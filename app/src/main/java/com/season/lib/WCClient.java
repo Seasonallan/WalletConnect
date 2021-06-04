@@ -1,4 +1,4 @@
-package com.season.socket;
+package com.season.lib;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -7,12 +7,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
-import com.season.socket.entity.Enums;
-import com.season.socket.entity.EthereumModels;
-import com.season.socket.entity.JsonRpcModels;
-import com.season.socket.entity.SessionModels;
-import com.season.socket.lib.Numeric;
-import com.season.socket.util.WCCipher;
+import com.season.lib.entity.Enums;
+import com.season.lib.entity.EthereumModels;
+import com.season.lib.entity.JsonRpcModels;
+import com.season.lib.entity.SessionModels;
+import com.season.lib.lib.Numeric;
+import com.season.lib.util.WCCipher;
 
 import java.util.Arrays;
 import java.util.Date;

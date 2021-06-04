@@ -1,4 +1,4 @@
-package com.season.socket.entity;
+package com.season.lib.entity;
 
 import java.util.List;
 

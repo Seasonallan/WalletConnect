@@ -1,4 +1,4 @@
-package com.season.socket.util;
+package com.season.lib.util;
 
 import android.text.TextUtils;
 

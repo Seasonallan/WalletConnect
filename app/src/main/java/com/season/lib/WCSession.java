@@ -1,4 +1,4 @@
-package com.season.socket;
+package com.season.lib;
 
 import android.net.Uri;
 

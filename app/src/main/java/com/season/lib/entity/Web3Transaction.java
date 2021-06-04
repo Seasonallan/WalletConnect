@@ -1,10 +1,10 @@
-package com.season.socket.entity;
+package com.season.lib.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.season.socket.util.Hex;
+import com.season.lib.util.Hex;
 
 import org.web3j.protocol.core.methods.request.Transaction;
 

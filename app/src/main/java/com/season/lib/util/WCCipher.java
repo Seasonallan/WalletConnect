@@ -1,6 +1,6 @@
-package com.season.socket.util;
+package com.season.lib.util;
 
-import com.season.socket.entity.SessionModels;
+import com.season.lib.entity.SessionModels;
 
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
