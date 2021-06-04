@@ -1,4 +1,4 @@
-package com.season.myapplication.entity;
+package com.season.socket.entity;
 
 public class JsonRpcModels {
 

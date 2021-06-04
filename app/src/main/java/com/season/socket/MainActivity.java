@@ -1,4 +1,4 @@
-package com.season.myapplication;
+package com.season.socket;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -10,9 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.season.myapplication.entity.EthereumModels;
-import com.season.myapplication.entity.SessionModels;
-import com.season.myapplication.entity.Web3Transaction;
+import com.season.myapplication.R;
+import com.season.socket.entity.EthereumModels;
+import com.season.socket.entity.SessionModels;
+import com.season.socket.entity.Web3Transaction;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.json.JSONException;
@@ -28,7 +29,6 @@ import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.ChainId;
 import org.web3j.utils.Numeric;
 
 import java.math.BigInteger;
@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    static byte[] bytesFromSignature(Sign.SignatureData signature) {
+    public static byte[] bytesFromSignature(Sign.SignatureData signature) {
         byte[] sigBytes = new byte[65];
         Arrays.fill(sigBytes, (byte) 0);
         try {
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
      * @param signature
      * @return
      */
-    private byte[] patchSignatureVComponent(byte[] signature) {
+    public static byte[] patchSignatureVComponent(byte[] signature) {
         if (signature != null && signature.length == 65 && signature[64] < 27) {
             signature[64] = (byte) (signature[64] + (byte) 0x1b);
         }

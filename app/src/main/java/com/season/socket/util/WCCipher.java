@@ -1,6 +1,6 @@
-package com.season.myapplication.util;
+package com.season.socket.util;
 
-import com.season.myapplication.entity.SessionModels;
+import com.season.socket.entity.SessionModels;
 
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -18,7 +18,7 @@ public final class WCCipher {
     public static final WCCipher INSTANCE;
 
     
-    public static SessionModels.WCEncryptionPayload encrypt( byte[] data,  byte[] key) throws Exception, NoSuchAlgorithmException {
+    public static SessionModels.WCEncryptionPayload encrypt(byte[] data, byte[] key) throws Exception, NoSuchAlgorithmException {
         byte[] iv = randomBytes(16);
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
         IvParameterSpec ivSpec = new IvParameterSpec(iv);

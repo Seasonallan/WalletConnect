@@ -39,6 +39,8 @@ dependencies {
     implementation 'org.bouncycastle:bcprov-jdk15on:1.62'
    // implementation group: 'com.trustwallet', name: 'wallet-core', version: '2.6.3'
 
+   // implementation project(path: ':web3library')
+
     implementation 'com.squareup.okhttp3:okhttp:3.8.1'
     implementation "com.google.code.gson:gson:2.8.6"
     implementation "org.web3j:core:4.6.0-android"

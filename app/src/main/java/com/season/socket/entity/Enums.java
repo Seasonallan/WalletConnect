@@ -1,4 +1,4 @@
-package com.season.myapplication.entity;
+package com.season.socket.entity;
 
 import com.google.gson.annotations.SerializedName;
 

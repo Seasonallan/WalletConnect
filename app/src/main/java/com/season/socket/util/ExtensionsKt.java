@@ -1,6 +1,6 @@
-package com.season.myapplication.util;
+package com.season.socket.util;
 
-import com.season.myapplication.lib.Numeric;
+import com.season.socket.lib.Numeric;
 
 
 public class ExtensionsKt {
