@@ -1,12 +1,12 @@
 package com.season.lib;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
+import com.season.L;
 import com.season.lib.entity.Enums;
 import com.season.lib.entity.EthereumModels;
 import com.season.lib.entity.JsonRpcModels;
@@ -55,10 +55,10 @@ public abstract class WCClient extends WebSocketListener {
         if (TextUtils.isEmpty(url)) {
             return;
         }
-        Log.d(TAG, "==> connect " + url);
+        L.d(TAG, "==> connect " + url);
         if (session != null && !session.equal(new WCSession(url))) {
-            Log.d(TAG, "==> connect " + session.topic);
-            Log.d(TAG, "==> connect " + new WCSession(url).topic);
+            L.d(TAG, "==> connect " + session.topic);
+            L.d(TAG, "==> connect " + new WCSession(url).topic);
             JsonRpcModels.JsonRpcRequest request = new JsonRpcModels.JsonRpcRequest();
             request.id = new Date().getTime();
             request.method = Enums.WCMethod.SESSION_UPDATE;
@@ -73,7 +73,7 @@ public abstract class WCClient extends WebSocketListener {
         peerMeta.name = "特斯";
         peerMeta.url = "https://www.alphawallet.com";
         peerMeta.description = "ETHAddress";
-        peerMeta.icons = Arrays.asList("https://alphawallet.com/wp-content/themes/alphawallet/img/alphawallet-logo.svg");
+        peerMeta.icons = Arrays.asList("https://alphawallet.com/wp-content/themes/alphawallet/img/alphawallet-Lo.svg");
 
         this.peerId = UUID.randomUUID().toString();
         this.remotePeerId = remotePeerId;
@@ -88,7 +88,7 @@ public abstract class WCClient extends WebSocketListener {
     private void handleRequest(JsonRpcModels.JsonRpcRequest<JsonArray> request) {
         switch (request.method) {
             case SESSION_REQUEST:
-                Log.d(TAG, "==> message SESSION_REQUEST");
+                L.d(TAG, "==> message SESSION_REQUEST");
                 List<SessionModels.WCSessionRequest> requestParams = gson.fromJson(request.params, new TypeToken<List<SessionModels.WCSessionRequest>>() {
                 }.getType());
                 SessionModels.WCSessionRequest requestParam = requestParams.get(0);
@@ -102,22 +102,22 @@ public abstract class WCClient extends WebSocketListener {
                 onSessionRequest(request.id, requestParam.peerMeta);
                 break;
             case SESSION_UPDATE:
-                Log.d(TAG, "==> message SESSION_UPDATE");
+                L.d(TAG, "==> message SESSION_UPDATE");
                 break;
             case ETH_SIGN:
-                Log.d(TAG, "==> message ETH_SIGN");
+                L.d(TAG, "==> message ETH_SIGN");
                 break;
             case ETH_PERSONAL_SIGN:
-                Log.d(TAG, "==> message ETH_PERSONAL_SIGN");
+                L.d(TAG, "==> message ETH_PERSONAL_SIGN");
                 break;
             case ETH_SIGN_TYPE_DATA:
-                Log.d(TAG, "==> message ETH_SIGN_TYPE_DATA");
+                L.d(TAG, "==> message ETH_SIGN_TYPE_DATA");
                 break;
             case ETH_SIGN_TRANSACTION:
-                Log.d(TAG, "==> message ETH_SIGN_TRANSACTION");
+                L.d(TAG, "==> message ETH_SIGN_TRANSACTION");
                 break;
             case ETH_SEND_TRANSACTION:
-                Log.d(TAG, "==> message ETH_SEND_TRANSACTION");
+                L.d(TAG, "==> message ETH_SEND_TRANSACTION");
                 //{"id":1622617690631960,"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{"from":"0xc0b09b78c00ebced69ed1b397f5fb6ad94938441","to":"0xba12222222228d8ba445958a75a0704d566bf2c8","gasPrice":"0x60db88400","gas":"0x1f6aa","value":"0x610eb740268b618","data":"0x52bbbe2900000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000c0b09b78c00ebced69ed1b397f5fb6ad949384410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0b09b78c00ebced69ed1b397f5fb6ad94938441000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003db760ae6c888e5be1ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0b09dea16768f0799065c475be02919503cb2a3500020000000000000000001a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006b175474e89094c44da98b954eedeac495271d0f0000000000000000000000000000000000000000000000000610eb740268b61800000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000000"}]}
 
                 List<EthereumModels.WCEthereumTransaction> transactionParams = gson.fromJson(request.params, new TypeToken<List<EthereumModels.WCEthereumTransaction>>() {
@@ -128,7 +128,7 @@ public abstract class WCClient extends WebSocketListener {
 
                 break;
             case GET_ACCOUNTS:
-                Log.d(TAG, "==> message GET_ACCOUNTS");
+                L.d(TAG, "==> message GET_ACCOUNTS");
                 break;
         }
     }
@@ -144,7 +144,7 @@ public abstract class WCClient extends WebSocketListener {
 
     private boolean encryptAndSend(String result) {
         try {
-            Log.d(TAG, "==> message " + result);
+            L.d(TAG, "==> message " + result);
             String payload = gson.toJson(WCCipher.encrypt(result.getBytes("UTF-8"), toByteArray(session.key)));
             SessionModels.WCSocketMessage message = new SessionModels.WCSocketMessage();
             message.topic = remotePeerId == null ? session.topic : remotePeerId;
@@ -152,7 +152,7 @@ public abstract class WCClient extends WebSocketListener {
             message.payload = payload;
 
             String json = gson.toJson(message);
-            Log.d(TAG, "==> encryptAndSend:" + json);
+            L.d(TAG, "==> encryptAndSend:" + json);
             return socket.send(json);
         } catch (Exception e) {
             e.printStackTrace();
@@ -170,7 +170,7 @@ public abstract class WCClient extends WebSocketListener {
     private boolean subscribe(String topic) {
         SessionModels.WCSocketMessage message = new SessionModels.WCSocketMessage(topic, Enums.MessageType.SUB, "");
         String json = gson.toJson(message);
-        Log.d(TAG, "==> Subscribe:" + json);
+        L.d(TAG, "==> Subscribe:" + json);
         return socket.send(gson.toJson(message));
     }
 
@@ -197,7 +197,7 @@ public abstract class WCClient extends WebSocketListener {
     }
 
     public boolean approveSession(List<String> accounts) throws Exception {
-        Log.d(TAG, "==> approveSession:" + handshakeId);
+        L.d(TAG, "==> approveSession:" + handshakeId);
 
         SessionModels.WCApproveSessionResponse result = new SessionModels.WCApproveSessionResponse();
         result.chainId = chainId;
@@ -226,7 +226,7 @@ public abstract class WCClient extends WebSocketListener {
      */
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
-        Log.d(TAG, "<< websocket opened >>");
+        L.d(TAG, "<< websocket opened >>");
         isConnected = true;
         // The Session.topic channel is used to listen session request messages only.
         subscribe(session.topic);
@@ -243,13 +243,13 @@ public abstract class WCClient extends WebSocketListener {
         String decrypted;
         try {
             if (text.equals("ping")) {
-                Log.d(TAG, "<== pong");
+                L.d(TAG, "<== pong");
                 onPong(text);
                 return;
             }
-            Log.d(TAG, "<== message " + text);
+            L.d(TAG, "<== message " + text);
             decrypted = decryptMessage(text);
-            Log.d(TAG, "<== decrypted " + decrypted);
+            L.d(TAG, "<== decrypted " + decrypted);
             handleMessage(decrypted);
         } catch (Exception e) {
             onFailure(e);
@@ -286,7 +286,7 @@ public abstract class WCClient extends WebSocketListener {
      */
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-        Log.d(TAG, "<== onFailure " + t.getMessage());
+        L.d(TAG, "<== onFailure " + t.getMessage());
         onFailure(t);
     }
 

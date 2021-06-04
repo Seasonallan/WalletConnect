@@ -1,8 +1,6 @@
 package com.season;
 
-import android.util.Log;
 
-import com.season.Configure;
 import com.season.lib.entity.EthereumModels;
 import com.season.lib.entity.Web3Transaction;
 
@@ -27,7 +25,7 @@ public class EthOfflineSign {
         Web3j web3j = Web3j.build(new HttpService(Configure.rpc));
 
         EthGetTransactionCount c = web3j.ethGetTransactionCount(Configure.address, DefaultBlockParameterName.PENDING).send();
-        Log.e("TAG", c.getTransactionCount().toString());
+        L.e("TAG", c.getTransactionCount().toString());
 
         Web3Transaction w3tx = new Web3Transaction(transactionParam, id);
 
