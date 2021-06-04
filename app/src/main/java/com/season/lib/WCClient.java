@@ -82,7 +82,6 @@ public abstract class WCClient extends WebSocketListener {
 
     }
 
-    private long handshakeId;
     private int chainId;
 
     private void handleRequest(JsonRpcModels.JsonRpcRequest<JsonArray> request) {
@@ -92,7 +91,6 @@ public abstract class WCClient extends WebSocketListener {
                 List<SessionModels.WCSessionRequest> requestParams = gson.fromJson(request.params, new TypeToken<List<SessionModels.WCSessionRequest>>() {
                 }.getType());
                 SessionModels.WCSessionRequest requestParam = requestParams.get(0);
-                handshakeId = request.id;
                 remotePeerId = requestParam.peerId;
                 if (requestParam.chainId == null) {
                     chainId = 1;
@@ -123,7 +121,6 @@ public abstract class WCClient extends WebSocketListener {
                 List<EthereumModels.WCEthereumTransaction> transactionParams = gson.fromJson(request.params, new TypeToken<List<EthereumModels.WCEthereumTransaction>>() {
                 }.getType());
                 EthereumModels.WCEthereumTransaction transactionParam = transactionParams.get(0);
-                handshakeId = request.id;
                 onTransaction(request.id, transactionParam);
 
                 break;
@@ -196,8 +193,8 @@ public abstract class WCClient extends WebSocketListener {
         return encryptAndSend(gson.toJson(response));
     }
 
-    public boolean approveSession(List<String> accounts) throws Exception {
-        L.d(TAG, "==> approveSession:" + handshakeId);
+    public boolean approveSession(long id, List<String> accounts) {
+        L.d(TAG, "==> approveSession:" + id);
 
         SessionModels.WCApproveSessionResponse result = new SessionModels.WCApproveSessionResponse();
         result.chainId = chainId;
@@ -205,8 +202,18 @@ public abstract class WCClient extends WebSocketListener {
         result.peerId = peerId;
         result.peerMeta = peerMeta;
         JsonRpcModels.JsonRpcResponse response = new JsonRpcModels.JsonRpcResponse();
-        response.id = handshakeId;
+        response.id = id;
         response.result = result;
+        return encryptAndSend(gson.toJson(response));
+    }
+
+    public boolean rejectSession(long id, String message) {
+        L.d(TAG, "==> rejectSession:" + id);
+
+        JsonRpcModels.JsonRpcErrorResponse response = new JsonRpcModels.JsonRpcErrorResponse();
+        response.id = id;
+        response.error = JsonRpcModels.JsonRpcError.serverError(message);
+
         return encryptAndSend(gson.toJson(response));
     }
 

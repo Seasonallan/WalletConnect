@@ -1,10 +1,13 @@
-package com.season.web;
+package com.season.ui.web;
 
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.net.http.SslError;
+import android.os.Build;
 import android.os.Bundle;
 import android.webkit.JavascriptInterface;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
@@ -42,6 +45,7 @@ public class Web3Activity extends AppCompatActivity {
         setTitle("loading...");
         web3 = findViewById(R.id.web3view);
 
+
         long time = System.currentTimeMillis();
         provderJs = readRawFile(R.raw.trust);
         initJs = loadInitJs(Configure.chainId, Configure.rpc);
@@ -52,8 +56,22 @@ public class Web3Activity extends AppCompatActivity {
         web3Setting.setJavaScriptEnabled(true);
         web3Setting.setDomStorageEnabled(true);
 
+
+        // 特别注意：5.1以上默认禁止了https和http混用，以下方式是开启
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            web3Setting.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+        }
+
         web3.addJavascriptInterface(new WebAppInterface(), "_tw_");
         web3.setWebViewClient(new WebViewClient() {
+
+
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                handler.proceed();    //表示等待证书响应
+                // handler.cancel();      //表示挂起连接，为默认方式
+                // handler.handleMessage(null);    //可做其他处理
+            }
 
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
@@ -63,10 +81,9 @@ public class Web3Activity extends AppCompatActivity {
                 String method = request.getMethod();
                 String url = request.getUrl().toString();
                 L.e("TAG-Intercept", url);
-                L.e("TAG-Intercept", method);
                 if (method.equalsIgnoreCase("GET") && !request.isForMainFrame()) {
                     if (url.contains(".js") || url.contains("json") || url.contains("css")) {
-                        //注入JS 暂时废弃
+                        //alpha wallet注入JS的入口，也可以实现， 暂时废弃
                     }
                 }
                 return super.shouldInterceptRequest(view, request);
@@ -147,7 +164,7 @@ public class Web3Activity extends AppCompatActivity {
                         JSONObject object = obj.getJSONObject("object");
                         EthereumModels.WCEthereumTransaction transactionParam = new EthereumModels.WCEthereumTransaction();
                         transactionParam.gasPrice = object.getString("gas");
-                        transactionParam.from = object.getString("gas");
+                        transactionParam.from = object.getString("from");
                         transactionParam.to = object.getString("to");
                         transactionParam.data = object.getString("data");
 
